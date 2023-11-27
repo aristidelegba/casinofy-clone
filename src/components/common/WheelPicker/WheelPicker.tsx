@@ -65,7 +65,7 @@ export type TWheelPickerRefMethods = {
 };
 
 const PopupTemplates = {
-  leave:(stay:Function)=> (
+  leave: (stay: Function) => (
     <div className="w-full h-auto bg-white rounded-lg relative flex flex-col gap-10 py-6 justify-center items-center">
       <div className="font-bold mb-2 text-center">
         En quittant la partie, vous serez rembourse a 90%. Voir termes et
@@ -74,7 +74,7 @@ const PopupTemplates = {
       <div className="flex items-center justify-center flex-wrap w-full px-5 gap-10">
         <Button
           onClick={() => {
-            stay()
+            stay();
           }}
           className="capitalize "
           variant="contained"
@@ -90,7 +90,6 @@ const PopupTemplates = {
           variant="contained"
           color="error"
           size="large"
-
         >
           Quitter
         </Button>
@@ -116,20 +115,20 @@ const PopupTemplates = {
       <div className="z-10 text-center">
         <div className="font-bold text-14">Tu as gagné</div>
         <div className="text-20 font-bold my-2">{gain} FCFA</div>
-    
       </div>
-      <div        style={{ bottom: "20px", left:"0" }}
-          className="capitalize absolute z-10 w-full flex-center">
-
-  <Button
+      <div
+        style={{ bottom: "20px", left: "0" }}
+        className="capitalize absolute z-10 w-full flex-center"
+      >
+        <Button
           onClick={() => {
             window.location.reload();
           }}
-   
           variant="contained"
         >
           Continuez
-        </Button>        </div>
+        </Button>{" "}
+      </div>
 
       <Image
         width={100}
@@ -213,8 +212,8 @@ const WheelPicker = forwardRef<TWheelPickerRefMethods, TWheelPickerProps>(
         guestNumber.toString()[id]
       );
       if (value !== guestNumber.toString()[id]) {
-        setPopupBody(PopupTemplates.failed);
-        setShowPopup(true);
+        // setPopupBody(PopupTemplates.failed);
+        // setShowPopup(true);
       }
       setWheels((prev) =>
         prev.map((e) => {
@@ -228,13 +227,13 @@ const WheelPicker = forwardRef<TWheelPickerRefMethods, TWheelPickerProps>(
       wheels.some((e) => e.spin === true);
 
     const wouldLeave = () => {
-      setPopupBody(PopupTemplates.leave(()=>setShowPopup(false)));
+      setPopupBody(PopupTemplates.leave(() => setShowPopup(false)));
       setShowPopup(true);
     };
 
     const onGameOver = () => {
-      setPopupBody(PopupTemplates.win(gains));
-      setShowPopup(true);
+      // setPopupBody(PopupTemplates.win(gains));
+      // setShowPopup(true);
     };
 
     useEffect(() => {
@@ -286,6 +285,15 @@ const WheelPicker = forwardRef<TWheelPickerRefMethods, TWheelPickerProps>(
                 spin={e.spin}
               />
             ))}
+          </div>
+          <div className="mt-10">
+            {wheels.map((w) => {
+              return (
+                <p>
+                  {w.id}: {w.result}
+                </p>
+              );
+            })}
           </div>
           <div className="flex-center flex-col my-14">
             <Button
@@ -395,9 +403,16 @@ function Wheel({ spin = false, speed, onStop }: TWheelProps) {
       entries.forEach((entry: IntersectionObserverEntry) => {
         if (entry.isIntersecting) {
           // console.log('wasSpinning, isSpinning', wasSpinning, isSpinning)
+          /**
+           * ! Determine if cell's span is fully visible in the root observer, with no contact with its border
+           */
+          const entryIsFullyVisible = entry.intersectionRatio === 1;
           if (wasSpinning && !isSpinning) {
-            // console.log("entry", entry.isIntersecting);
-            setFocusedCell(entry.target.textContent);
+            // console.log("entryIsFullyVisible", entryIsFullyVisible);
+            // console.log("entry", entry.intersectionRatio);
+            setFocusedCell(
+              entryIsFullyVisible ? entry.target.textContent : null
+            );
           }
         }
       });
@@ -408,13 +423,14 @@ function Wheel({ spin = false, speed, onStop }: TWheelProps) {
   function observeSpinning() {
     const maxCloneNumber = 4;
     const observer = new IntersectionObserver(observerCallback, {
-      threshold: 0.5,
+      threshold: [0, 0.5, 1],
       root: observerRootRef?.current,
       rootMargin: "0px",
     });
 
     // Observe each cell
-    const cells = observerRootRef?.current?.querySelectorAll(".cell") || [];
+    const cells =
+      observerRootRef?.current?.querySelectorAll(".cell span") || [];
     for (let index = 0; index < (cells || []).length; index++) {
       const element = cells[index];
       observer.observe(element);
@@ -457,8 +473,22 @@ function Wheel({ spin = false, speed, onStop }: TWheelProps) {
               // .fill({})
               // .map((e, i) => ({ value: i }))
               numberSet.map(({ value }) => (
-                <div className="cell font-semibold" key={value}>
-                  {value}
+                <div
+                  className="cell font-semibold"
+                  key={value}
+                  id={value + "-" + e}
+                >
+                  <span
+                    // className="bg-gray-500 text-white "
+                    style={{ lineHeight: "74%" }}
+                  >
+                    {value}
+                  </span>
+                  {/* <svg height="30" width="200">
+                    <text x="0" y="15" fill="red">
+                      {value}
+                    </text>
+                  </svg> */}
                 </div>
               ))
             }
