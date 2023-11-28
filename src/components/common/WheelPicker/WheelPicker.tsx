@@ -204,14 +204,14 @@ const WheelPicker = forwardRef<TWheelPickerRefMethods, TWheelPickerProps>(
       id: number;
       value: string | null;
     }) => {
-      if (!value) return;
+      // if (!value) return;
       console.log(
         "value !== guestNumber.toString()[id]",
         value,
         guestNumber,
         guestNumber.toString()[id]
       );
-      if (value !== guestNumber.toString()[id]) {
+      if (!value || value !== guestNumber.toString()[id]) {
         setPopupBody(PopupTemplates.failed);
         setShowPopup(true);
       }
