@@ -204,7 +204,7 @@ const WheelPicker = forwardRef<TWheelPickerRefMethods, TWheelPickerProps>(
       id: number;
       value: string | null;
     }) => {
-      // if (!value) return;
+      if (!value) return;
       console.log(
         "value !== guestNumber.toString()[id]",
         value,
@@ -403,7 +403,7 @@ function Wheel({ spin = false, speed, onStop }: TWheelProps) {
             // console.log("entryIsFullyVisible", entryIsFullyVisible);
             // console.log("entry", entry.intersectionRatio);
             setFocusedCell(
-              entryIsFullyVisible ? entry.target.textContent : null
+              entryIsFullyVisible ? entry.target.textContent : "null"
             );
           }
         }
