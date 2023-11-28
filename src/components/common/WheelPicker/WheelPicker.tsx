@@ -211,7 +211,7 @@ const WheelPicker = forwardRef<TWheelPickerRefMethods, TWheelPickerProps>(
         guestNumber,
         guestNumber.toString()[id]
       );
-      if (!value || value !== guestNumber.toString()[id]) {
+      if (value !== guestNumber.toString()[id]) {
         setPopupBody(PopupTemplates.failed);
         setShowPopup(true);
       }
