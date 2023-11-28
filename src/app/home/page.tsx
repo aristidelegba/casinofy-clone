@@ -14,7 +14,7 @@ import {
 } from "@/configs";
 import { useGlobalContext } from "@/contexts";
 import { calculateTotalGain } from "@/helpers/utils";
-import { Button, TextField } from "@mui/material";
+import { Button, Input, TextField } from "@mui/material";
 import { customAlphabet } from "nanoid";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 
@@ -43,7 +43,7 @@ export default function Home() {
 
       <div className="my-5 flex-col flex-center gap-10">
         <WheelPicker
-        gains={userInputs.gains||0}
+          gains={userInputs.gains || 0}
           speed={userInputs.wheelSpeed.value || 0}
           guestNumber={userInputs.guestNumber || 0}
           wheelCount={userInputs.numbersCount.value || 2}
@@ -171,7 +171,13 @@ function GuestNumberForm({
   const { isSpinning } = useGlobalContext();
   const [value, setValue] = useState<string>("");
   function onValueChange(e: ChangeEvent<HTMLInputElement>) {
-    setValue(e?.target?.value);
+    const eventValue = e?.target?.value;
+    const isNumericValue = !isNaN(parseInt(eventValue)); // html input can accept 'e' char even thoug the input type is numeric, this is to prevent this behavior
+    if (eventValue.length <= length && isNumericValue) {
+      setValue(eventValue);
+    } else {
+      e.preventDefault();
+    }
   }
 
   useEffect(() => {
@@ -190,17 +196,20 @@ function GuestNumberForm({
   return (
     <>
       <div className="flex-center flex-col gap-5">
+        {/* <Input */}
         <TextField
+          type="number"
+          inputMode="numeric"
           disabled={isSpinning}
           value={value}
           onChange={onValueChange}
-          label="Entrer un nombre"
+          title="Entrer un nombre"
           className="w-full"
-          variant="outlined"
+          // variant="outlined"
         />
         <div>ou</div>
         <Button
-        disabled={isSpinning}
+          disabled={isSpinning}
           onClick={generateRandomValuet}
           variant="contained"
           className="px-10 py-3"

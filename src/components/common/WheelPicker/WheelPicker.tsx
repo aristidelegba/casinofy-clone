@@ -34,7 +34,7 @@ const WheelPickerWrapper = styled.div`
     right: 0;
     background-color: green;
     width: 100%;
-    height: 10px; /* Adjust the height of the blurred border */
+    height: 27px; /* Adjust the height of the blurred border */
     background: inherit;
     z-index: 9999;
   }
@@ -52,8 +52,8 @@ const WheelPickerWrapper = styled.div`
     bottom: 0;
     background: linear-gradient(
       to top,
-      rgba(255, 255, 255, 0),
-      rgba(255, 255, 255, 0.8\8) 1%
+      rgba(255, 255, 255, 0.8),
+      rgba(255, 255, 255, 0.3\8) 80%
     );
   }
 `;
@@ -212,8 +212,8 @@ const WheelPicker = forwardRef<TWheelPickerRefMethods, TWheelPickerProps>(
         guestNumber.toString()[id]
       );
       if (value !== guestNumber.toString()[id]) {
-        // setPopupBody(PopupTemplates.failed);
-        // setShowPopup(true);
+        setPopupBody(PopupTemplates.failed);
+        setShowPopup(true);
       }
       setWheels((prev) =>
         prev.map((e) => {
@@ -232,8 +232,8 @@ const WheelPicker = forwardRef<TWheelPickerRefMethods, TWheelPickerProps>(
     };
 
     const onGameOver = () => {
-      // setPopupBody(PopupTemplates.win(gains));
-      // setShowPopup(true);
+      setPopupBody(PopupTemplates.win(gains));
+      setShowPopup(true);
     };
 
     useEffect(() => {
@@ -286,15 +286,7 @@ const WheelPicker = forwardRef<TWheelPickerRefMethods, TWheelPickerProps>(
               />
             ))}
           </div>
-          <div className="mt-10">
-            {wheels.map((w) => {
-              return (
-                <p>
-                  {w.id}: {w.result}
-                </p>
-              );
-            })}
-          </div>
+        
           <div className="flex-center flex-col my-14">
             <Button
               disabled={!atLeastSomeWhellIsSpinning() || bootingCountDown > 0}
@@ -463,7 +455,7 @@ function Wheel({ spin = false, speed, onStop }: TWheelProps) {
           <div
             key={e}
             style={{
-              animationDuration: 10 / speed + "s",
+              animationDuration:  (numberSet.length/speed) + "s",
               animationPlayState: spin ? "running" : "paused",
             }}
             className={classNames("wheel spin")}
@@ -484,11 +476,7 @@ function Wheel({ spin = false, speed, onStop }: TWheelProps) {
                   >
                     {value}
                   </span>
-                  {/* <svg height="30" width="200">
-                    <text x="0" y="15" fill="red">
-                      {value}
-                    </text>
-                  </svg> */}
+                 
                 </div>
               ))
             }
