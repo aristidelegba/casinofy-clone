@@ -17,7 +17,7 @@ import React, {
 import styled, { keyframes } from "styled-components";
 import Popup from "../Popup/Popup";
 import Image from "next/image";
-const cellHeight = 30;
+const cellHeight = 20;
 
 const WheelPickerWrapper = styled.div`
   .inner {
@@ -286,7 +286,7 @@ const WheelPicker = forwardRef<TWheelPickerRefMethods, TWheelPickerProps>(
               />
             ))}
           </div>
-        
+
           <div className="flex-center flex-col my-14">
             <Button
               disabled={!atLeastSomeWhellIsSpinning() || bootingCountDown > 0}
@@ -399,11 +399,46 @@ function Wheel({ spin = false, speed, onStop }: TWheelProps) {
            * ! Determine if cell's span is fully visible in the root observer, with no contact with its border
            */
           const entryIsFullyVisible = entry.intersectionRatio === 1;
+          const entryRect = entry.boundingClientRect;
+          const rootRect = (observer.root as Element).getBoundingClientRect();
+          const rootBorderWidth = Math.ceil(
+            parseFloat(
+              getComputedStyle(observer.root as Element)["borderTopWidth"]
+            )
+          );
+
+          const toFixedZero = (number: number) => {
+            return parseInt((number || 0).toFixed(0));
+          };
+
+          const entryIsBetWeenTwoIndicators =
+            toFixedZero(entryRect.top) >
+              toFixedZero(rootRect.top + rootBorderWidth) &&
+            toFixedZero(entryRect.bottom) <
+              toFixedZero(rootRect.bottom - rootBorderWidth);
+
           if (wasSpinning && !isSpinning) {
-            // console.log("entryIsFullyVisible", entryIsFullyVisible);
+            console.log("rootBorder", rootBorderWidth);
+            console.log(
+              "entryRect",
+              toFixedZero(entryRect.top),
+              toFixedZero(entryRect.bottom)
+            );
+            console.log(
+              "rootRect",
+              toFixedZero(rootRect.top + rootBorderWidth),
+              toFixedZero(rootRect.bottom - rootBorderWidth)
+            );
+            console.log("entryIsFullyVisible", entryIsFullyVisible);
+            console.log(
+              "entryIsBetWeenTwoIndicators",
+              entryIsBetWeenTwoIndicators
+            );
             // console.log("entry", entry.intersectionRatio);
             setFocusedCell(
-              entryIsFullyVisible ? entry.target.textContent : "null"
+              entryIsFullyVisible && entryIsBetWeenTwoIndicators
+                ? entry.target.textContent
+                : "null"
             );
           }
         }
@@ -445,7 +480,7 @@ function Wheel({ spin = false, speed, onStop }: TWheelProps) {
   return (
     <StyledWrapper>
       <div
-        className="rootObserver pt-[30px]"
+        className="rootObserver pt-[20px]"
         ref={(node) => {
           observerRootRef.current = node;
           if (observerRootRef) observerRootRef.current = node;
@@ -455,7 +490,7 @@ function Wheel({ spin = false, speed, onStop }: TWheelProps) {
           <div
             key={e}
             style={{
-              animationDuration:  (numberSet.length/speed) + "s",
+              animationDuration: numberSet.length / speed + "s",
               animationPlayState: spin ? "running" : "paused",
             }}
             className={classNames("wheel spin")}
@@ -472,11 +507,10 @@ function Wheel({ spin = false, speed, onStop }: TWheelProps) {
                 >
                   <span
                     // className="bg-gray-500 text-white "
-                    style={{ lineHeight: "74%" }}
+                    style={{ lineHeight: "71%" }}
                   >
                     {value}
                   </span>
-                 
                 </div>
               ))
             }
